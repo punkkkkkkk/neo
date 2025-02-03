@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: monospace;
+            width: 320px;
+            margin: 0;
+            padding: 16px;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        #userInfo {
+            width: 100%;
+            text-align: center;
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            padding: 16px;
+            box-sizing: border-box;
+            background-color: black;
+            border-radius: 8px;
+        }
+
+        /* New style for the uninstall button */
+        .uninstall-button {
+            position: relative;
+            background-color: black;
+            color: #ff4444;
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+            width: 100%;
+            cursor: pointer;
+            font-family: monospace;
+            z-index: 1;
+        }
+
+        .uninstall-button::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            bottom: -2px;
+            left: -2px;
+            background: linear-gradient(45deg, #ff4444, #ff6b6b, #ff8787);
+            border-radius: 9px;
+            z-index: -1;
+            transition: opacity 0.3s ease;
+            opacity: 0.5;
+        }
+
+        .uninstall-button::after {
+            content: '';
+            position: absolute;
+            inset: 1px;
+            background: black;
+            border-radius: 7px;
+            z-index: -1;
+        }
+
+        .uninstall-button:hover::before {
+            opacity: 1;
+            filter: blur(2px);
+        }
+
+        .uninstall-button:hover {
+            transform: scale(1.02);
+        }
+        .info-message {
+            background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1));
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .info-message .main-message {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .info-message a {
+            color: #3b82f6;
+            text-decoration: none;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .info-message a:hover {
+            color: #8b5cf6;
+            text-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+        }
+
+        .important-note {
+            color: #ec4899;
+            font-weight: bold;
+            margin-top: 8px;
+            font-size: 0.75rem;
+            text-align: center;
+            padding: 0 8px;
+        }
+        .shortcuts-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .shortcuts-list li {
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        #shortcuts .info-message {
+            margin-bottom: 0; /* Remove top margin */
+            text-align: left;
+        }
+
+        #shortcuts .info-message h3 {
+            text-align: center;
+            margin-bottom: 16px;
+            font-size: 1.1rem;
+        }
+        
+        /* Updated Toggle Switch Styles */
+        .toggle-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 12px;
+            background: linear-gradient(45deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .toggle-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 28px;
+            margin-left: 12px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: all 0.4s ease;
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+            transition: all 0.4s ease;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+        }
+
+        input:checked + .toggle-slider {
+            background-color: rgba(139, 92, 246, 0.2);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+            background: linear-gradient(45deg, #ec4899, #8b5cf6);
+        }
+
+        .toggle-label {
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .toggle-warning {
+            font-size: 0.75rem;
+            color: #ff4444;
+            margin-top: 8px;
+            padding: 8px;
+            border-radius: 8px;
+            background-color: rgba(255, 68, 68, 0.1);
+            border: 1px solid rgba(255, 68, 68, 0.2);
+        }
+
+        .toggle-success {
+            font-size: 0.75rem;
+            color: #4ade80;
+            margin-top: 4px;
+            padding: 8px;
+            border-radius: 8px;
+            background-color: rgba(74, 222, 128, 0.1);
+            border: 1px solid rgba(74, 222, 128, 0.2);
+        }
+
+        .flex {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .gap-4 {
+            gap: 16px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .relative {
+            position: relative;
+            width: 100%;
+        }
+
+        .absolute {
+            position: absolute;
+        }
+
+        .rounded-lg {
+            border-radius: 8px;
+        }
+
+        .bg-black {
+            background-color: black;
+        }
+
+        .text-sm {
+            font-size: 0.875rem;
+        }
+
+        .mb-4 {
+            margin-bottom: 16px;
+        }
+
+        .mb-6 {
+            margin-bottom: 24px;
+        }
+
+        .text-white {
+            color: white;
+        }
+
+        /* Form styles */
+        #loginForm {
+            width: 100%;
+        }
+
+        .glow-input {
+            width: 100%;
+            box-sizing: border-box;
+            background-color: black;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            padding: 8px 12px;
+            font-size: 0.875rem; /* Increased font size */
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .glow-input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        }
+
+        .glow-button {
+            position: relative;
+            background-color: black;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+            width: 100%;
+            cursor: pointer;
+            font-family: monospace;
+            z-index: 1;
+        }
+
+        .glow-button::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            bottom: -2px;
+            left: -2px;
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6, #ec4899);
+            border-radius: 9px;
+            z-index: -1;
+            transition: opacity 0.3s ease;
+            opacity: 0.5;
+        }
+
+        .glow-button::after {
+            content: '';
+            position: absolute;
+            inset: 1px;
+            background: black;
+            border-radius: 7px;
+            z-index: -1;
+        }
+
+        .glow-button:hover::before {
+            opacity: 1;
+            filter: blur(2px);
+        }
+
+        .glow-button:hover {
+            transform: scale(1.02);
+        }
+
+        #statusMessage, #error {
+            font-size: 0.875rem;
+            text-align: center;
+            width: 100%;
+        }
+
+        .error-message {
+            color: red;
+        }
+
+        #userInfo {
+            width: 100%;
+            text-align: center; /* Center align user info */
+        }
+
+        .form-container {
+            background-color: black;
+            padding: 16px;
+            border-radius: 8px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Glow effect for username and shortcuts */
+        .glow {
+            text-shadow: 0 0 5px rgba(59, 130, 246, 0.9), 0 0 10px rgba(139, 92, 246, 0.7), 0 0 15px rgba(236, 72, 153, 0.5);
+        }
+
+        /* Added styles for thick labels */
+        .thick-label {
+            font-weight: bold; /* Increased thickness */
+            font-size: large;
+        }
+
+        /* Align shortcuts to the left */
+        #shortcuts {
+            text-align: left; /* Align to the left */
+        }
+
+        .portal-shortcuts {
+            margin-top: 16px;
+            padding: 12px;
+            background: linear-gradient(45deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05));
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hot-feature {
+            font-size: 0.7rem;
+            background: linear-gradient(45deg, #ff4444, #ff8787);
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 8px;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        .status-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .stealth-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4ade80;
+            transition: background-color 0.3s ease;
+        }
+        
+        .stealth-indicator.active {
+            background: #ec4899;
+            box-shadow: 0 0 5px rgba(236, 72, 153, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="flex gap-4">
+        <div class="info-message">
+            <p class="main-message">To get your credentials, please visit <a href="https://freeneopass.vercel.app" target="_blank">our website</a></p>
+            
+            <!-- Updated stealth toggle structure -->
+            <div class="toggle-container">
+                <div class="toggle-header">
+                    <span class="toggle-label">Ultra Stealth Mode for NERDS</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="stealthMode">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-warning">
+                    Disables popups and chatbot features for IamNeo/Examly
+                </div>
+                <div class="toggle-success hidden">
+                    Auto selects and pastes answers using Alt + Shift + Q
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Message -->
+        <div class="status-container">
+            <div id="statusMessage" class="text-sm glow"></div>
+            <div id="stealthIndicator" class="stealth-indicator"></div>
+        </div>
+        
+        <!-- Login Form -->
+        <form id="loginForm" class="hidden">
+            <div class="relative">
+                <div class="form-container">
+                    <!-- Username Field -->
+                    <div class="mb-4">
+                        <label for="username" class="block text-sm mb-2 thick-label">Username:</label> <!-- Increased thickness -->
+                        <input 
+                            type="text" 
+                            id="username" 
+                            required
+                            class="glow-input"
+                        >
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="mb-6">
+                        <label for="password" class="block text-sm mb-2 thick-label">Password:</label> <!-- Increased thickness -->
+                        <input 
+                            type="password" 
+                            id="password" 
+                            required
+                            class="glow-input"
+                        >
+                    </div>
+
+                    <!-- Login Button -->
+                    <button 
+                        type="submit"
+                        class="glow-button thick-label"
+                    >
+                        Login
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Shortcuts Section -->
+        <div id="shortcuts" class="hidden">
+            <div class="info-message"> <!-- Reuse the info-message class for consistent styling -->
+                <h3 class="text-sm mb-2 glow">Keyboard Shortcuts:</h3>
+                <ul class="text-sm mb-4 shortcuts-list">
+                    <li><strong class="glow">Alt + Shift + Z:</strong> Search Answers & Resources Using AI</li>
+                    <li><strong class="glow">Alt + Shift + X:</strong> Solve MCQs By Selecting Text</li>
+                    <li><strong class="glow">Alt + C:</strong> Toggle Chatbot Overlay</li>
+                    <li><strong class="glow">Ctrl + V:</strong> Paste Content Even When Restricted</li>
+                </ul>
+                
+                <div class="portal-shortcuts">
+                    <h4 class="text-sm mb-2 glow">Portal Specific Shortcuts:</h4>
+                    <ul class="text-sm mb-4 shortcuts-list">
+                        <li>
+                            <strong class="glow">Alt + Shift + Q:</strong> 
+                            Solve IamNeo/Examly Questions
+                            <span class="hot-feature">HOT!</span>
+                        </li>
+                        <li><strong class="glow">Alt + Shift + N:</strong> Solve NPTEL MCQs</li>
+                    </ul>
+                </div>
+            </div>
+        </div>        
+
+        <!-- User Info -->
+        <div id="userInfo" class="hidden">
+            <div class="button-container">
+                <button 
+                    id="logoutButton"
+                    class="glow-button thick-label"
+                >
+                    Logout
+                </button>
+                <button 
+                    id="uninstallButton"
+                    class="uninstall-button thick-label"
+                >
+                    Uninstall Extension
+                </button>
+            </div>
+        </div>
+        <!-- Error Message -->
+        <div id="error" class="error-message"></div>
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html>
